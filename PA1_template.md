@@ -9,7 +9,8 @@ This assignment makes use of data collected by a personal monitoring device.
 Each heading in the assignment will be completed in a chunk of R code
 
 ##Loading and preprocessing the data
-```{r,echo=TRUE}
+
+```r
 ##First access data
         setwd("~/Dropbox/R Course Files/Reproducible Research")
         data1<-read.csv("activity.csv")
@@ -23,7 +24,8 @@ Each heading in the assignment will be completed in a chunk of R code
 ```
 
 ##What is the total number of steps taken per day?
-```{r,echo=TRUE}
+
+```r
 ##Combine days, add up total steps
         temp1<- aggregate(steps ~ date, data2, sum)
 
@@ -31,17 +33,37 @@ Each heading in the assignment will be completed in a chunk of R code
         library(ggplot2)
         ggplot(temp1,aes(x=steps))+geom_histogram(fill="blue",color="black")+
         ggtitle("Total Number of Steps Taken Per Day")
+```
 
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+```
+
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
+
+```r
 ##Determine mean and medium steps each day
         calc1<-temp1$steps
         Avg1<-mean(calc1)
         Med1<-median(calc1)
         paste("The average number of steps per day is", Avg1)
+```
+
+```
+## [1] "The average number of steps per day is 10766.1886792453"
+```
+
+```r
         paste("The median number of steps per day is", Med1)
 ```
 
+```
+## [1] "The median number of steps per day is 10765"
+```
+
 ##What is the average daily activity pattern?
-```{r,echo=TRUE}
+
+```r
 ## Combine intervals, determine average steps taken
         temp2<-aggregate (steps ~ interval, data2, mean)
         
@@ -49,21 +71,36 @@ Each heading in the assignment will be completed in a chunk of R code
         g2<-ggplot(temp2, aes(x=interval,y=steps))+geom_line()
         g2<-g2+ggtitle("Average Steps Per 5 Minute Interval")
         g2+xlab("Time Interval (h:mm)")+ylab("Average Number of Steps")
-        
+```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+
+```r
 ## Determine interval with the maximum number of steps taken
         library(dplyr)
         temp3<-arrange(temp2, desc(steps))
         Max_Time<-numeric()
         Max_Time<-temp3[1,1]
         paste("The interval(h:mm) with the maximum steps taken is", Max_Time)
-```       
+```
+
+```
+## [1] "The interval(h:mm) with the maximum steps taken is 835"
+```
 
 ##Impute missing values
-```{r,echo=TRUE}
+
+```r
  ## Determine the missing values in the original dataset
         missing_rows<-sum(is.na(data1))
         paste("The total number of rows with NA is",missing_rows)
-        
+```
+
+```
+## [1] "The total number of rows with NA is 2304"
+```
+
+```r
 ## Create new data set with imputed values
         Modded_Data<-data1
         Modded_Data$interval<-as.factor(Modded_Data$interval)
@@ -79,7 +116,15 @@ Modded_Data<-ddply(Modded_Data, ~ interval, transform, steps = impute.mean(steps
 ## Plot histogram
         library(ggplot2)
         ggplot(Mod_temp1,aes(x=steps))+geom_histogram(fill="red",color="black")
-        
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+```
+
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+
+```r
 ##Determine mean and medium steps each day
         Mod_calc1<-Mod_temp1$steps
         Mod_Avg1<-mean(Mod_calc1)
@@ -89,12 +134,31 @@ Modded_Data<-ddply(Modded_Data, ~ interval, transform, steps = impute.mean(steps
         Diff_Avg<-Avg1-Mod_Avg1
         Diff_Med<-Med1-Mod_Med1
         paste("The difference between imputed and observed mean is", Diff_Avg)
+```
+
+```
+## [1] "The difference between imputed and observed mean is 0"
+```
+
+```r
         paste("The difference between imputed and observed median is",Diff_Med)
+```
+
+```
+## [1] "The difference between imputed and observed median is -1.1886792452824"
+```
+
+```r
         print("Thus there is no effect on mean but median is altered by imputing.")
-``` 
+```
+
+```
+## [1] "Thus there is no effect on mean but median is altered by imputing."
+```
 
 ##Are there differences in activity patterns between weekdays and weekends?
-```{r,echo=TRUE}
+
+```r
 ## Group data into weekdays or weekend
         Imp_Day<-as.Date(Modded_Data2$date)
         library(chron)
@@ -116,6 +180,15 @@ Modded_Data<-ddply(Modded_Data, ~ interval, transform, steps = impute.mean(steps
         g<-g+facet_grid(. ~ Type_of_day)
         g<-g+xlab("5 minute intervals")+ylab("Average number of steps")
         g+ggtitle("Comparison Of Weekday Versus Weekend Trends")
+```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+
+```r
         print("The imputed data suggest a difference in activity patterns")
-``` 
+```
+
+```
+## [1] "The imputed data suggest a difference in activity patterns"
+```
 
